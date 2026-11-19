@@ -17,4 +17,5 @@ export type AgentEvent =
 export type ModelProvider =
   | "gemini"
   | "claude"
+  | "openrouter"
   | "openai";

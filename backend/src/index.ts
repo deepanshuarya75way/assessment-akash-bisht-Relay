@@ -3,6 +3,7 @@ import type { ClientMessage, ServerMessage } from './types/websocket';
 import connectDB from './db/connector';
 import { handleChatMessage, createWorkspace, getAllWorkspace, getConversation } from './services/workspace.service';
 import { configDotenv } from 'dotenv';
+import { requestToolApproval, resolveToolApproval, cancelSocketApproval } from './services/approval.service';
 
 configDotenv();
 
@@ -14,6 +15,8 @@ async function startServer() {
         const wss = new WebSocketServer({
             port: 3000,
         });
+
+        let human_permission=true;
 
         console.log("WebSocket server running on port 3000");
 
@@ -51,6 +54,7 @@ async function startServer() {
                         }
 
                         case "chat_message": {
+
                             await handleChatMessage(
                                 message.workspaceId,
                                 message.message,
@@ -58,9 +62,24 @@ async function startServer() {
                                 message.model,
                                 (event) => {
                                     socket.send(JSON.stringify(event));
+                                },
+                                (approval) => {
+                                    return requestToolApproval(socket, approval, (event) => {
+                                    socket.send(JSON.stringify(event));
+                                });
                                 }
                             );
 
+                            break;
+                        }
+
+                        case "approve_tool_call": {
+                            console.log("received approval response", message)
+                            const resolved=resolveToolApproval(message.approvalId, message.approved, socket);
+                            if(!resolved){
+                                console.log("not approved in index")
+                            }
+                            console.log("approval resolved");
                             break;
                         }
 
@@ -90,6 +109,7 @@ async function startServer() {
 
             socket.on("close", () => {
                 console.log("Client disconnected");
+                cancelSocketApproval(socket);
             });
         });
         

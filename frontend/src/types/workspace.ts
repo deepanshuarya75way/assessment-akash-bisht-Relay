@@ -12,6 +12,6 @@ export type CreateWorkspace={
 };
 
 export type ModelSelection = {
-    provider: "gemini" | "claude" | "openai";
+    provider: "gemini" | "claude" | "openai" | "openrouter";
     model: string;
   };

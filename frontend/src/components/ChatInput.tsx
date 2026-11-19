@@ -35,6 +35,13 @@ const models = {
       value: "gpt-5",
     },
   ],
+
+  openrouter: [
+    {
+      label: "baidu/ernie-5.5-flash-preview:free",
+      value: "baidu/ernie-5.5-flash-preview:free"
+    }
+  ]
 };
 
 function ChatInput({
@@ -137,6 +144,7 @@ function ChatInput({
               <option value="gemini">Gemini</option>
               <option value="claude">Claude</option>
               <option value="openai">OpenAI</option>
+              <option value="openrouter">OpenRouter</option>
             </select>
 
             <select

@@ -20,6 +20,11 @@ export type ClientMessage =
   | {
     type: "get_conversation";
     conversationId: string;
+  }|
+  {
+    type: "approve_tool_call";
+    approvalId: string;
+    approved: boolean;
   };
 
 export type ServerMessage =
@@ -56,4 +61,13 @@ export type ServerMessage =
   | {
     type: "error";
     message: string;
-  };
+  }|({
+    type: "approval_required";
+  } & ToolApprovalRequest)
+
+  export type ToolApprovalRequest = {
+    approvalId: string;
+    tool: string;
+    toolCallId: string;
+    args: Record<string, unknown>;
+  }

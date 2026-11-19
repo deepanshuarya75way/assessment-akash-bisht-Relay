@@ -9,6 +9,7 @@ export type ModelSession = {
 export type ModelProvider =
     | "gemini"
     | "claude"
+    | "openrouter"
     | "openai";
 
 export type ModelConfig = {

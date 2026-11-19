@@ -25,6 +25,8 @@ async function callGemini(
     session: ModelSession
 ): Promise<Decision> {
 
+    console.log("req sent")
+
     const response = await ai.models.generateContent({
         model,
         contents: session.history as any[],
@@ -87,6 +89,7 @@ export const geminiModel: Model = {
                 },
             ],
         });
+        console.log("senddddd")
 
         return callGemini(tools, model, session);
     },

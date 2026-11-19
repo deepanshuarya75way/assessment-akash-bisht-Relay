@@ -1,4 +1,5 @@
 import { ModelProvider } from "../agent/model/types";
+import { ToolApprovalRequest } from "../agent/types";
 import type { Conversation, CreateWorkspace, Workspace } from "./workspace";
 
 export type ClientMessage =
@@ -20,7 +21,12 @@ export type ClientMessage =
   | {
     type: "get_conversation";
     conversationId: string;
-  };
+  }
+  |{
+    type: "approve_tool_call";
+    approvalId: string;
+    approved: boolean;
+  }
 
 export type ServerMessage =
   | {
@@ -56,4 +62,11 @@ export type ServerMessage =
   | {
     type: "error";
     message: string;
-  };
+  }
+  |{
+    type: "approval_required";
+    approvalId: string;
+    tool: string;
+    toolCallId: string;
+    args: Record<string, unknown>;
+  }

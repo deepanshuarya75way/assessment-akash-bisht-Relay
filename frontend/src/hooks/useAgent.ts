@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { AgentEvent } from "../types/agent";
 import type { Conversation } from "../types/conversation";
 import type { ServerMessage } from "../types/websocket";
+import type { ToolApprovalRequest } from "../types/websocket";
 
 type Subscribe = (handler: (message: ServerMessage) => void) => () => void;
 
@@ -10,6 +11,7 @@ export function useAgent(subscribe: Subscribe) {
   const [agentEvents, setAgentEvents] = useState<AgentEvent[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [agentError, setAgentError] = useState<string | null>(null);
+  const [pendingApproval, setPendingApproval]= useState<ToolApprovalRequest | null>(null);
 
   useEffect(() => {
     return subscribe((message) => {
@@ -18,6 +20,15 @@ export function useAgent(subscribe: Subscribe) {
           setConversation(message.conversation);
           setIsProcessing(false);
           break;
+        
+          case "approval_required":
+            setPendingApproval({
+              approvalId: message.approvalId,
+              tool: message.tool,
+              toolCallId: message.toolCallId,
+              args: message.args
+            })
+            break;
 
         case "agent_tool_start":
           setAgentEvents((prev) => [
@@ -46,6 +57,7 @@ export function useAgent(subscribe: Subscribe) {
           break;
 
         case "agent_final":
+          setPendingApproval(null);
           setConversation((prev) => {
             if (!prev) return prev;
 
@@ -69,6 +81,7 @@ export function useAgent(subscribe: Subscribe) {
 
         case "error":
           setAgentEvents([]);
+          setPendingApproval(null);
           setAgentError(message.message);
           setIsProcessing(false);
           break;
@@ -104,6 +117,8 @@ export function useAgent(subscribe: Subscribe) {
     setAgentError(null);
   }, []);
 
+  const clearPendingApproval= useCallback(()=> setPendingApproval(null),[]);
+
   return {
     conversation,
     setConversation,
@@ -112,5 +127,7 @@ export function useAgent(subscribe: Subscribe) {
     isProcessing,
     addUserMessage,
     clearAgentEvents,
+    pendingApproval,
+    clearPendingApproval
   };
 }

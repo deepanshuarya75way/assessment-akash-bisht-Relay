@@ -1,3 +1,5 @@
+import { SrvRecord } from "node:dns";
+
 export type AgentMessage =
     | {
         role: "system";
@@ -62,4 +64,18 @@ export type AgentEvent =
     | {
         type: "error";
         message: string;
-    };
+    }
+    |{
+        type: "permission_required";
+        tool: string;
+        message: string;
+    }
+
+export type ToolApprovalRequest = {
+    approvalId: string;
+    tool: string;
+    toolCallId: string;
+    args: Record<string, unknown>;
+}
+
+export type ToolApprovalHandler = (request: ToolApprovalRequest)=> Promise<boolean>

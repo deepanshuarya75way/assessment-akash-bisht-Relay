@@ -26,6 +26,8 @@ function App() {
     isProcessing,
     addUserMessage,
     clearAgentEvents,
+    pendingApproval,
+    clearPendingApproval
   } = useAgent(subscribe);
 
   const { workspaces, selectedWorkspace, setSelectedWorkspace } = useWorkspace({
@@ -34,6 +36,16 @@ function App() {
     clearAgentEvents,
     setConversation,
   });
+
+  const handleApprovalDecision=(approvalId: string, approved: boolean)=>{
+    console.log("sending approval");
+    sendMessage({
+      type: "approve_tool_call",
+      approvalId,
+      approved
+    });
+    clearPendingApproval();
+  }
 
   const handleSendMessage = (message: string) => {
     if (!selectedWorkspace) return;
@@ -110,6 +122,8 @@ function App() {
           isProcessing={isProcessing}
           modelSelection={modelSelection}
           setModelSelection={setModelSelection}
+          pendingApproval={pendingApproval}
+          onApprovalDecision={handleApprovalDecision}
         />
       </main>
     </div>

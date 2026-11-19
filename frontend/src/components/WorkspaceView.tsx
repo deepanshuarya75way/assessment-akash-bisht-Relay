@@ -8,6 +8,8 @@ import ChatInput from "./ChatInput";
 import Markdown from "./Markdown";
 import Logo from "./Logo";
 import type { ModelSelection } from "../types/workspace";
+import Permission from "./Permission";
+import type { ToolApprovalRequest } from "../types/websocket";
 
 function WorkspaceView({
   selectedWorkspace,
@@ -18,6 +20,8 @@ function WorkspaceView({
   isProcessing,
   modelSelection,
   setModelSelection,
+  pendingApproval,
+  onApprovalDecision
 }: {
   selectedWorkspace: Workspace | null;
   onSendMessage: (message: string) => void;
@@ -27,6 +31,8 @@ function WorkspaceView({
   isProcessing: boolean;
   modelSelection: ModelSelection;
   setModelSelection: React.Dispatch<React.SetStateAction<ModelSelection>>;
+  pendingApproval: ToolApprovalRequest | null;
+  onApprovalDecision: (approvalId: string, approved: boolean)=>void;
 }) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -95,6 +101,10 @@ function WorkspaceView({
           </div>
         )}
       </div>
+
+      {pendingApproval && (
+        <Permission approval={pendingApproval} onDecision={onApprovalDecision}/>
+      )}
 
       <ChatInput
         onSend={onSendMessage}
