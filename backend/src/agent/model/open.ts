@@ -7,8 +7,8 @@ import type { ToolDefinition } from "../tools/types";
 import type { Model, ModelSession } from "./types";
 
 const openai = new OpenAI({
-    baseURL: 'https://api.groq.com/openai/v1',
-    apiKey: process.env.GROK_API_KEY,
+    baseURL: 'https://openrouter.ai/api/v1',
+    apiKey: process.env.OPENROUTER_API_KEY,
 });
 
 function toOpenAITools(tools: ToolDefinition[]) {
